@@ -1,0 +1,43 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Build debug APK
+        run: gradle --no-daemon assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pocket-snake-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publish the APK as the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk pocket-snake.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest pocket-snake.apk \
+            --target "$GITHUB_SHA" \
+            --title "Pocket Snake (latest build)" \
+            --notes "Debug build of commit $GITHUB_SHA. Download pocket-snake.apk on your Android phone and open it to install."
