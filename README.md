@@ -1,7 +1,7 @@
 # android-snake
 A simple game of snake for android
 
-Swipe anywhere to steer, tap to pause. The screen is styled like a pocket LCD, and your best score is saved on the device.
+Swipe or use the on-screen d-pad to steer, and tap the board to pause. The screen is styled like a pocket LCD, and your best score is saved on the device.
 
 ## Getting the app
 
